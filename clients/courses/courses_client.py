@@ -2,6 +2,9 @@ from clients.api_client import ApiClient
 from httpx import Response
 from typing import TypedDict
 
+from clients.private_http_builder import AuthentificationUserDict, get_private_http_client
+
+
 class GetCoursesQueryDict(TypedDict):
     userId: str
 
@@ -23,16 +26,19 @@ class UpdateCourseRequestDict(TypedDict):
 
 class CoursesClient(ApiClient):
     def get_courses_api(self, query: GetCoursesQueryDict) -> Response:
-        return self.get("/api/v1/courses", params=query)
+        return self.get("/api/v1/courses/", params=query)
 
     def get_course_api(self, course_id: str) -> Response:
-        return self.get(f"/api/v1/courses{course_id}")
+        return self.get(f"/api/v1/courses/{course_id}")
 
     def create_course_api(self, request: CreateCourseRequestDict) -> Response:
-        return self.post("/api/v1/courses", json=request)
+        return self.post("/api/v1/courses/", json=request)
 
     def update_course_api(self, course_id: str, request: UpdateCourseRequestDict) -> Response:
-        return self.patch(f"/api/v1/courses{course_id}", json=request)
+        return self.patch(f"/api/v1/courses/{course_id}", json=request)
 
     def delete_courses_api(self, course_id: str) -> Response:
-        return self.delete(f"/api/v1/courses{course_id}")
+        return self.delete(f"/api/v1/courses/{course_id}")
+
+    def get_courses_client(user: AuthentificationUserDict) -> CoursesClient:
+        return CoursesClient(client=get_private_http_client(user))
